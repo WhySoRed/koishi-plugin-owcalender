@@ -12,16 +12,22 @@ export const inject = ["http", "cache"];
 
 export const name = "owcalender";
 
-export const usage =`
+export const usage = `
 来源：https://owspace.com/
-`
+`;
 
 export interface Config {
   cacheMaxAge: number;
+  cacheNotToday: boolean;
 }
 
 export const Config: Schema<Config> = Schema.object({
-  cacheMaxAge: Schema.number().default(24 * 60 * 60 * 1000).description("当日的图片缓存保留时间，默认为24 * 60 * 60 * 1000毫秒，即一天"),
+  cacheMaxAge: Schema.number()
+    .default(24 * 60 * 60 * 1000)
+    .description("图片的缓存保留时间，默认为24 * 60 * 60 * 1000毫秒，即一天"),
+  cacheNotToday: Schema.boolean()
+    .default(false)
+    .description("是否缓存非当日的单向历"),
 });
 
 declare module "@koishijs/cache" {
@@ -30,7 +36,7 @@ declare module "@koishijs/cache" {
   }
 }
 
-export function apply(ctx: Context,config:Config) {
+export function apply(ctx: Context, config: Config) {
   // 获取格式为yyyy/mmdd的东八区的时间字符串
   function getdateStr(date?: string) {
     date =
@@ -97,12 +103,13 @@ export function apply(ctx: Context,config:Config) {
             session.send("获取单向历失败");
             return;
           }
-          await ctx.cache.set(
-            "owcalender",
-            dateStr,
-            owcalenderBase64String,
-            config.cacheMaxAge
-          );
+          if (config.cacheNotToday || dateStr === getdateStr())
+            await ctx.cache.set(
+              "owcalender",
+              dateStr,
+              owcalenderBase64String,
+              config.cacheMaxAge
+            );
           session.send(h.image(res, "image/png"));
           return;
         })
@@ -116,7 +123,7 @@ export function apply(ctx: Context,config:Config) {
         `可以附带参数来指定日期\n` +
         `格式为yyyy/mmdd\n` +
         `如"单向历 ${getdateStr()}\n\n"` +
-        `通过"单向历 随机"\n` + 
+        `通过"单向历 随机"\n` +
         `可以获取随机日期的单向历\n`
     );
 }
