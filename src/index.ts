@@ -21,7 +21,7 @@ export interface Config {
 }
 
 export const Config: Schema<Config> = Schema.object({
-  cacheMaxAge: Schema.number().default(24 * 60 * 60 * 1000).description("图片缓存保留时间，默认为24 * 60 * 60 * 1000毫秒，即一天"),
+  cacheMaxAge: Schema.number().default(24 * 60 * 60 * 1000).description("当日的图片缓存保留时间，默认为24 * 60 * 60 * 1000毫秒，即一天"),
 });
 
 declare module "@koishijs/cache" {
@@ -112,10 +112,11 @@ export function apply(ctx: Context,config:Config) {
     })
     .usage(
       `=============\n` +
-        `获取单向历\n` +
-        `可以指定日期\n` +
+        `获取今天的单向历\n\n` +
+        `可以附带参数来指定日期\n` +
         `格式为yyyy/mmdd\n` +
         `如"单向历 ${getdateStr()}\n\n"` +
-        `"单向历 随机"可以获取随机日期的单向历\n`
+        `通过"单向历 随机"\n` + 
+        `可以获取随机日期的单向历\n`
     );
 }

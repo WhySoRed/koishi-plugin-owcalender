@@ -1,5 +1,7 @@
 {
   "name": "koishi-plugin-owcalender",
+  "author": "WhySoRed",
+  "homepage": "https://github.com/WhySoRed/koishi-plugin-owcalender",
   "description": "单向历  \"致时光以生命\"",
   "version": "0.0.1",
   "main": "lib/index.js",
@@ -16,8 +18,5 @@
   ],
   "peerDependencies": {
     "koishi": "^4.17.8"
-  },
-  "dependencies": {
-    "@koishijs/assets": "^1.1.2"
   }
 }
